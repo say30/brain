@@ -1,0 +1,24 @@
+﻿/*
+!.gitignore
+!.gitattributes
+!README.md
+!LICENSE
+!**/*.lua
+!**/*.luau
+!**/*.json
+!**/*.md
+
+# Fichiers Roblox binaires (tu peux décommenter si tu veux les pousser)
+# !**/*.rbxm
+# !**/*.rbxmx
+# !**/*.rbxl
+# !**/*.rbxlx
+
+# Node/Vite/Build/Temp éventuels
+node_modules/
+dist/
+build/
+temp/
+.vscode/
+.DS_Store
+Thumbs.db

@@ -1,0 +1,25 @@
+--[[
+  Extracted from: ReplicatedStorage.Packages.Freeze.utils.max
+  Class: ModuleScript
+  Source file: rickdev.rbxlx
+]]
+
+-- Saved by UniversalSynSaveInstance (Join to Copy Games) https://discord.gg/wx4ThpAsmw
+
+-- [[ Script name: max, time of decompilation: Sat Jun 28 18:35:50 2025 ]]
+local function v2(v0, v1) --[[ Line: 2 ]]
+    return v1 < v0;
+end;
+return function(v3, v4) --[[ Line: 6 ]]
+    -- upvalues: v2 (copy)
+    local v5 = if v4 == nil then v2 else v4;
+    local v6 = nil;
+    local v7 = nil;
+    for v8, v9 in v3 do
+        if v7 == nil or v5(v7, v9) == false then
+            v6 = v8;
+            v7 = v9;
+        end;
+    end;
+    return v7, v6;
+end;

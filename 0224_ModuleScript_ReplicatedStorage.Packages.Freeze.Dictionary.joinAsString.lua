@@ -1,0 +1,16 @@
+--[[
+  Extracted from: ReplicatedStorage.Packages.Freeze.Dictionary.joinAsString
+  Class: ModuleScript
+  Source file: rickdev.rbxlx
+]]
+
+-- Saved by UniversalSynSaveInstance (Join to Copy Games) https://discord.gg/wx4ThpAsmw
+
+-- [[ Script name: joinAsString, time of decompilation: Sat Jun 28 18:35:37 2025 ]]
+return function(v0, v1) --[[ Line: 15 ]] --[[ Name: joinAsString ]]
+    local v2 = {};
+    for v3, v4 in v0 do
+        table.insert(v2, string.format("%s=%s", tostring(v3), (tostring(v4))));
+    end;
+    return table.concat(v2, v1 or ",");
+end;
