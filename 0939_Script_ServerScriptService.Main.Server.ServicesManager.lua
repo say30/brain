@@ -7,12 +7,13 @@
 local Services = game:GetService("ServerScriptService").Services
 
 local ServicesList = {
-	Road = Services.RoadAnimalService,
-	LikeService = Services.LikeService,
-	EventService = Services.EventService,
-	SoftShutdownService = Services.SoftShutdownService,
-	
-	require(Services.AdminPanelService)
+        Road = Services.RoadAnimalService,
+        LikeService = Services.LikeService,
+        BaseService = Services.BaseService,
+        EventService = Services.EventService,
+        SoftShutdownService = Services.SoftShutdownService,
+
+        require(Services.AdminPanelService)
 }
 
 local Module = require(ServicesList.Road)
@@ -22,6 +23,11 @@ _G.RoadAnimalService = RoadAnimalService
 
 local LikeService = require(ServicesList.LikeService)
 LikeService:Start()
+
+local BaseServiceModule = require(ServicesList.BaseService)
+local BaseService = BaseServiceModule.new()
+BaseService:Start()
+_G.BaseService = BaseService
 
 local EventService = require(ServicesList.EventService)
 _G.EventService = EventService.new()

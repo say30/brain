@@ -12,13 +12,17 @@ local Players = game:GetService("Players")
 local HttpService = game:GetService("HttpService")
 local Packages = ReplicatedStorage:WaitForChild("Packages")
 
+local BaseConfig = require(ReplicatedStorage:WaitForChild("BaseConfig"))
+
 -->> Modules
 local ProfileStore = require(ServerScriptService.Controllers.ProfileStore)
 local Synchronizer = require(ReplicatedStorage.Packages.Synchronizer)
 
 local Template = {
-	Coins = 100,
-	Rebirths = 0,
+        Coins = 100,
+        Gelatin = 0,
+        Essences = 0,
+        Rebirths = 0,
 	RainbowSpinWheel = {
 		Spins = 1,
 		PaidSpins = { x3 = 0 },
@@ -76,7 +80,8 @@ local Template = {
 		CurrentStep = 1,
 		StepsCompleted = {}
 	},
-	HourPickCooldown = 0
+        HourPickCooldown = 0,
+        BaseState = BaseConfig.createDefaultState(),
 }
 
 local GlobalTemplate = {
@@ -484,36 +489,88 @@ function DataStoreModule.GetMaxAnimals(player: Player)
 end
 
 function DataStoreModule.GetCoins(player: Player)
-	local profile = Profiles[player]
-	if profile and profile.Data and ProfileLoadingStates[player] == LOADING_STATES.LOADED then
-		return profile.Data.Coins
-	end
-	return 0
+        local profile = Profiles[player]
+        if profile and profile.Data and ProfileLoadingStates[player] == LOADING_STATES.LOADED then
+                return profile.Data.Coins
+        end
+        return 0
+end
+
+function DataStoreModule.GetGelatin(player: Player)
+        local profile = Profiles[player]
+        if profile and profile.Data and ProfileLoadingStates[player] == LOADING_STATES.LOADED then
+                return profile.Data.Gelatin or 0
+        end
+        return 0
+end
+
+function DataStoreModule.GetEssences(player: Player)
+        local profile = Profiles[player]
+        if profile and profile.Data and ProfileLoadingStates[player] == LOADING_STATES.LOADED then
+                return profile.Data.Essences or 0
+        end
+        return 0
 end
 
 function DataStoreModule.addCoins(player: Player, amount: number)
-	return safeDataOperation(player, function()
-		local profile = Profiles[player]
-		if profile and profile.Data then
-			profile.Data.Coins = profile.Data.Coins + math.max(0, math.floor(amount))
+        return safeDataOperation(player, function()
+                local profile = Profiles[player]
+                if profile and profile.Data then
+                        profile.Data.Coins = profile.Data.Coins + math.max(0, math.floor(amount))
 		end
 	end)
+end
+
+function DataStoreModule.addGelatin(player: Player, amount: number)
+        return safeDataOperation(player, function()
+                local profile = Profiles[player]
+                if profile and profile.Data then
+                        profile.Data.Gelatin = (profile.Data.Gelatin or 0) + math.max(0, math.floor(amount))
+                end
+        end)
+end
+
+function DataStoreModule.addEssences(player: Player, amount: number)
+        return safeDataOperation(player, function()
+                local profile = Profiles[player]
+                if profile and profile.Data then
+                        profile.Data.Essences = (profile.Data.Essences or 0) + math.max(0, math.floor(amount))
+                end
+        end)
 end
 
 function DataStoreModule.SetCoins(player: Player, amount: number)
-	return safeDataOperation(player, function()
-		local profile = Profiles[player]
-		if profile and profile.Data then
-			profile.Data.Coins = math.max(0, math.floor(amount))
-		end
-	end)
+        return safeDataOperation(player, function()
+                local profile = Profiles[player]
+                if profile and profile.Data then
+                        profile.Data.Coins = math.max(0, math.floor(amount))
+                end
+        end)
+end
+
+function DataStoreModule.SetGelatin(player: Player, amount: number)
+        return safeDataOperation(player, function()
+                local profile = Profiles[player]
+                if profile and profile.Data then
+                        profile.Data.Gelatin = math.max(0, math.floor(amount))
+                end
+        end)
+end
+
+function DataStoreModule.SetEssences(player: Player, amount: number)
+        return safeDataOperation(player, function()
+                local profile = Profiles[player]
+                if profile and profile.Data then
+                        profile.Data.Essences = math.max(0, math.floor(amount))
+                end
+        end)
 end
 
 function DataStoreModule.deductCoins(player: Player, amount: number)
-	return safeDataOperation(player, function()
-		local profile = Profiles[player]
-		if profile and profile.Data then
-			local deductAmount = math.abs(math.floor(amount))
+        return safeDataOperation(player, function()
+                local profile = Profiles[player]
+                if profile and profile.Data then
+                        local deductAmount = math.abs(math.floor(amount))
 			local currentCoins = profile.Data.Coins
 
 			local newCoins = math.max(0, currentCoins - deductAmount)
@@ -525,11 +582,43 @@ function DataStoreModule.deductCoins(player: Player, amount: number)
 	end)
 end
 
+function DataStoreModule.deductGelatin(player: Player, amount: number)
+        return safeDataOperation(player, function()
+                local profile = Profiles[player]
+                if profile and profile.Data then
+                        local deductAmount = math.abs(math.floor(amount))
+                        local currentGelatin = profile.Data.Gelatin or 0
+
+                        local newGelatin = math.max(0, currentGelatin - deductAmount)
+                        profile.Data.Gelatin = newGelatin
+
+                        return newGelatin >= 0 and currentGelatin >= deductAmount
+                end
+                return false
+        end)
+end
+
+function DataStoreModule.deductEssences(player: Player, amount: number)
+        return safeDataOperation(player, function()
+                local profile = Profiles[player]
+                if profile and profile.Data then
+                        local deductAmount = math.abs(math.floor(amount))
+                        local currentEssences = profile.Data.Essences or 0
+
+                        local newEssences = math.max(0, currentEssences - deductAmount)
+                        profile.Data.Essences = newEssences
+
+                        return newEssences >= 0 and currentEssences >= deductAmount
+                end
+                return false
+        end)
+end
+
 function DataStoreModule.deductRebirths(player: Player, amount: number)
-	return safeDataOperation(player, function()
-		local profile = Profiles[player]
-		if profile and profile.Data then
-			local deductAmount = math.abs(math.floor(amount))
+        return safeDataOperation(player, function()
+                local profile = Profiles[player]
+                if profile and profile.Data then
+                        local deductAmount = math.abs(math.floor(amount))
 			local currentCoins = profile.Data.Rebirths
 
 			local newCoins = math.max(0, currentCoins - deductAmount)
@@ -541,11 +630,56 @@ function DataStoreModule.deductRebirths(player: Player, amount: number)
 	end)
 end
 
+function DataStoreModule.GetBaseState(player: Player)
+        local profile = Profiles[player]
+        if profile and profile.Data and ProfileLoadingStates[player] == LOADING_STATES.LOADED then
+                profile.Data.BaseState = profile.Data.BaseState or BaseConfig.createDefaultState()
+                local baseState = profile.Data.BaseState
+                baseState.UnlockedPods = baseState.UnlockedPods or BaseConfig.InitialUnlockedPods
+                baseState.AssignedPods = baseState.AssignedPods or {}
+                baseState.Upgrades = baseState.Upgrades or {}
+                return baseState
+        end
+
+        local defaultState = BaseConfig.createDefaultState()
+        return defaultState
+end
+
+function DataStoreModule.SetBaseState(player: Player, baseState)
+        return safeDataOperation(player, function()
+                local profile = Profiles[player]
+                if profile and profile.Data then
+                        local newState = baseState or BaseConfig.createDefaultState()
+                        profile.Data.BaseState = BaseConfig.copyState(newState)
+                end
+        end)
+end
+
+function DataStoreModule.UpdateBaseState(player: Player, callback)
+        if typeof(callback) ~= "function" then
+                return false
+        end
+
+        return safeDataOperation(player, function()
+                local profile = Profiles[player]
+                if profile and profile.Data then
+                        local state = profile.Data.BaseState
+                        if typeof(state) ~= "table" then
+                                state = BaseConfig.createDefaultState()
+                                profile.Data.BaseState = state
+                        end
+
+                        callback(state)
+                        return state
+                end
+        end)
+end
+
 function DataStoreModule.GetRebirths(player: Player)
-	local profile = Profiles[player]
-	if profile and profile.Data and ProfileLoadingStates[player] == LOADING_STATES.LOADED then
-		return profile.Data.Rebirths
-	end
+        local profile = Profiles[player]
+        if profile and profile.Data and ProfileLoadingStates[player] == LOADING_STATES.LOADED then
+                return profile.Data.Rebirths
+        end
 	return 0
 end
 

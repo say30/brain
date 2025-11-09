@@ -17,6 +17,7 @@ local Synchronizer = require(Packages.Synchronizer)
 local Rebirths = require(Data.Rebirth)
 local Friends = require(ReplicatedStorage:WaitForChild("Shared").Friends)
 local Animals = require(ReplicatedStorage:WaitForChild("Shared").Animals)
+local BaseConfig = require(ReplicatedStorage:WaitForChild("BaseConfig"))
 
 local HttpServices = game:GetService("HttpService")
 local CommunicationRoute = ReplicatedStorage.Packages.Synchronizer.CommunicationRoute
@@ -46,39 +47,52 @@ function Players.new(player: Player)
 		local plot = Synchronizer:Create(player, {})
 		plot:AddListener(player)
 
-		local leaderstats = Instance.new("Folder")
-		leaderstats.Name = "leaderstats"
-		leaderstats.Parent = player
+                local leaderstats = Instance.new("Folder")
+                leaderstats.Name = "leaderstats"
+                leaderstats.Parent = player
 
-		local steals = Instance.new("IntValue")
-		steals.Name = "Steals"
-		steals.Value = Data.Steals or 0
-		steals.Parent = leaderstats
+                local steals = Instance.new("IntValue")
+                steals.Name = "Steals"
+                steals.Value = Data.Steals or 0
+                steals.Parent = leaderstats
 
-		local rebirths = Instance.new("IntValue")
-		rebirths.Name = "Rebirths"
-		rebirths.Value = Data.Rebirths or 0
-		rebirths.Parent = leaderstats
+                local rebirths = Instance.new("IntValue")
+                rebirths.Name = "Rebirths"
+                rebirths.Value = Data.Rebirths or 0
+                rebirths.Parent = leaderstats
 
-		local coins = Instance.new("IntValue")
-		coins.Name = "Cash"
-		coins.Value = Data.Coins or 0
-		coins.Parent = leaderstats
+                local coins = Instance.new("IntValue")
+                coins.Name = "Cash"
+                coins.Value = Data.Coins or 0
+                coins.Parent = leaderstats
 
-		plot:Set("Coins", Data.Coins or 0)
-		plot:Set("Rebirth", Data.Rebirths or 0)
-		plot:Set("Spins", Data.BloodmoonSpinWheelSpins or 0)
-		plot:Set("PaidSpins", Data.BloodmoonSpinWheelPaidSpins or {})
-		plot:Set("LastDailyDiscount", Data.BloodmoonSpinWheelLastDailyDiscount or 0)
-		plot:Set("AnimalPodiums", Data.AnimalList or {})
-		plot:Set("AnimalAddedOrRemoved", Data.AnimalList or {})
-		plot:Set("Index", Data.Index or {})
-		plot:Set("TimesJoined", Data.TimesJoined or 1)
-		plot:Set("Steals", Data.Steals or 0)
-		plot:Set("Settings",Data.Settings or {})
-		plot:Set("Items", Data.Items or {})
-		plot:Set("Gamepass", Data.Gamepass or {})
-		plot:Set("AutoBuy", {})
+                local gelatin = Instance.new("IntValue")
+                gelatin.Name = "Gelatin"
+                gelatin.Value = Data.Gelatin or 0
+                gelatin.Parent = leaderstats
+
+                local essences = Instance.new("IntValue")
+                essences.Name = "Essences"
+                essences.Value = Data.Essences or 0
+                essences.Parent = leaderstats
+
+                plot:Set("Coins", Data.Coins or 0)
+                plot:Set("Rebirth", Data.Rebirths or 0)
+                plot:Set("Spins", Data.BloodmoonSpinWheelSpins or 0)
+                plot:Set("PaidSpins", Data.BloodmoonSpinWheelPaidSpins or {})
+                plot:Set("LastDailyDiscount", Data.BloodmoonSpinWheelLastDailyDiscount or 0)
+                plot:Set("AnimalPodiums", Data.AnimalList or {})
+                plot:Set("AnimalAddedOrRemoved", Data.AnimalList or {})
+                plot:Set("Index", Data.Index or {})
+                plot:Set("TimesJoined", Data.TimesJoined or 1)
+                plot:Set("Steals", Data.Steals or 0)
+                plot:Set("Settings",Data.Settings or {})
+                plot:Set("Items", Data.Items or {})
+                plot:Set("Gamepass", Data.Gamepass or {})
+                plot:Set("AutoBuy", {})
+                plot:Set("Gelatin", Data.Gelatin or 0)
+                plot:Set("Essences", Data.Essences or 0)
+                plot:Set("BaseState", Data.BaseState or BaseConfig.createDefaultState())
 
 		if Data.AutoBuySettings then
 			for itemName, isEnabled in pairs(Data.AutoBuySettings) do
@@ -126,17 +140,25 @@ function Players.new(player: Player)
 		rainbowEventData.SkipPurchased = rainbowEventData.SkipPurchased or false
 		plot:Set("RainbowEvent", rainbowEventData)
 
-		plot:OnChanged("Coins", function(newValue)
-			coins.Value = newValue or 0
-		end, true)
+                plot:OnChanged("Coins", function(newValue)
+                        coins.Value = newValue or 0
+                end, true)
 
-		plot:OnChanged("Rebirth", function(newValue)
-			rebirths.Value = newValue or 0
-		end, true)
+                plot:OnChanged("Rebirth", function(newValue)
+                        rebirths.Value = newValue or 0
+                end, true)
 
-		plot:OnChanged("Steals", function(newValue)
-			steals.Value = newValue or 0
-		end, true)
+                plot:OnChanged("Steals", function(newValue)
+                        steals.Value = newValue or 0
+                end, true)
+
+                plot:OnChanged("Gelatin", function(newValue)
+                        gelatin.Value = newValue or 0
+                end, true)
+
+                plot:OnChanged("Essences", function(newValue)
+                        essences.Value = newValue or 0
+                end, true)
 
 		CommunicationRoute:FireClient(player, {{"ListenerAdded", player}})
 
